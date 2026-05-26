@@ -1,0 +1,17 @@
+.float div{
+    height: 100px;
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+    padding: 10px;
+    color: aliceblue;
+}
+.float :nth-child(1){
+    float: left;
+    background-color:red;
+}
+.float :nth-child(2){
+    float: right;
+    background-color:pink;
+}

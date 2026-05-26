@@ -1,0 +1,98 @@
+#para1{
+    color: blanchedalmond;
+    background-color: black;
+    display: flex;
+    justify-content:left;
+}
+.para1{
+    color: aqua;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 60px;
+
+}
+.class1{
+    color: blueviolet;
+    background-color: blanchedalmond;
+    font-style: italic;
+}
+.class2{
+    color: brown;
+    background-color: black;
+    font-style: initial;
+}
+h3,h4{
+    color: cadetblue;
+    background-color: rgb(0, 255, 221);
+    text-align: center;
+}
+div h1{
+    color: aquamarine;
+    font-style: unset;
+    background-color: black;
+}
+.img{
+    background-image: url('download.jpg');
+    width: 50px;
+    height: 50px;
+     
+}
+.font :nth-child(1){
+    color: chartreuse;
+    background-color: black;
+    word-spacing: 30px;
+
+}
+.font :nth-child(2){
+    font-style: italic;
+    background-color: aquamarine;
+    text-transform: uppercase;
+}
+.font :nth-child(3){
+    text-align: right;
+    letter-spacing: 30px;
+}
+
+.box{
+    margin: 40px;
+    padding: 40px;
+    border: 40px solid orange;
+    background-color: antiquewhite;
+    background-clip: content-box;
+    align-items: center;
+    height: 100px;
+    width: 100px;
+    display: flex;
+    justify-content: center;
+
+
+}
+.posi div{
+    background-color: brown;
+    width: 100px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+}
+.posi :nth-child(1){
+    background-color: aqua;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.posi :nth-child(2){
+    background-color: aqua;
+    position: relative;
+    top: 0;
+    right: -200px;
+}
+.posi :nth-child(3){
+    background-color: aqua;
+    position: fixed;
+    top: 0;
+}

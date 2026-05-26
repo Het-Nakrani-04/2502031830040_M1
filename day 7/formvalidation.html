@@ -1,0 +1,288 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Validation</title>
+
+    <script>
+        function validate() {
+
+            event.preventDefault();
+
+            var form1 = document.getElementById("RegForm");
+
+            var name = form1.Name.value;
+            var email = form1.EMail.value;
+            var phone = form1.Telephone.value;
+            var course = form1.Subject.value;
+            var password = form1.Password.value;
+
+            var regEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+            var regPhone = /^[0-9]{10}$/;
+
+            if (name == "") {
+                alert("Please Enter Your Name.");
+                return false;
+            }
+
+            if (email == "" || !regEmail.test(email)) {
+                alert("Please Enter Valid Email Address.");
+                return false;
+            }
+
+            if (password == "") {
+                alert("Please Enter Your Password.");
+                return false;
+            }
+
+            if (password.length < 6) {
+                alert("Password should be at least 6 characters long.");
+                return false;
+            }
+
+            if (phone == "" || !regPhone.test(phone)) {
+                alert("Please Enter Valid Phone Number.");
+                return false;
+            }
+
+            if (course == "Select") {
+                alert("Please Select Your Course.");
+                return false;
+            }
+
+            document.getElementById("output").innerHTML = `
+            <h2>Submitted Details</h2>
+            <p><b>Name:</b> ${name}</p>
+            <p><b>Email:</b> ${email}</p>
+            <p><b>Mobile:</b> ${phone}</p>
+            <p><b>Course:</b> ${course}</p>`;
+
+            alert("Form submitted successfully!");
+            return true;
+        }
+    </script>
+</head>
+
+<body>
+
+<form name="RegForm" id="RegForm" onsubmit="return validate()">
+
+    <table border="2" cellpadding="10">
+
+        <tr>
+            <td colspan="2">
+                <h1 style="text-align:center;">REGISTRATION FORM</h1>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Name :</td>
+            <td>
+                <input type="text" size="40" name="Name" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>E-mail Address:</td>
+            <td>
+                <input type="text" size="40" name="EMail" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>Password:</td>
+            <td>
+                <input type="password" size="40" name="Password" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>Mobile:</td>
+            <td>
+                <input type="text" size="40" name="Telephone" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>Select Your Course :</td>
+            <td>
+                <select name="Subject">
+                    <option value="Select">Select Course</option>
+                    <option>B.Tech</option>
+                    <option>M.Tech</option>
+                    <option>BCA</option>
+                    <option>MCA</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Comments:</td>
+            <td>
+                <textarea cols="40" name="Comment"></textarea>
+            </td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td>
+                <input type="submit" value="Submit" name="Submit" />
+                <input type="reset" value="Reset" name="Reset" />
+            </td>
+        </tr>
+
+    </table>
+
+</form>
+
+<P id="output"></P>
+
+</body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Validation</title>
+
+    <script>
+        function validate() {
+
+            event.preventDefault();
+
+            var form1 = document.getElementById("RegForm");
+
+            var name = form1.Name.value;
+            var email = form1.EMail.value;
+            var phone = form1.Telephone.value;
+            var course = form1.Subject.value;
+            var password = form1.Password.value;
+
+            var regEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+            var regPhone = /^[0-9]{10}$/;
+
+            if (name == "") {
+                alert("Please Enter Your Name.");
+                return false;
+            }
+
+            if (email == "" || !regEmail.test(email)) {
+                alert("Please Enter Valid Email Address.");
+                return false;
+            }
+
+            if (password == "") {
+                alert("Please Enter Your Password.");
+                return false;
+            }
+
+            if (password.length < 6) {
+                alert("Password should be at least 6 characters long.");
+                return false;
+            }
+
+            if (phone == "" || !regPhone.test(phone)) {
+                alert("Please Enter Valid Phone Number.");
+                return false;
+            }
+
+            if (course == "Select") {
+                alert("Please Select Your Course.");
+                return false;
+            }
+
+            document.getElementById("output").innerHTML = `
+            <h2>Submitted Details</h2>
+            <p><b>Name:</b> ${name}</p>
+            <p><b>Email:</b> ${email}</p>
+            <p><b>Mobile:</b> ${phone}</p>
+            <p><b>Course:</b> ${course}</p>`;
+
+            alert("Form submitted successfully!");
+            return true;
+        }
+    </script>
+</head>
+
+<body>
+
+<form name="RegForm" id="RegForm" onsubmit="return validate()">
+
+    <table border="2" cellpadding="10">
+
+        <tr>
+            <td colspan="2">
+                <h1 style="text-align:center;">REGISTRATION FORM</h1>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Name :</td>
+            <td>
+                <input type="text" size="40" name="Name" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>E-mail Address:</td>
+            <td>
+                <input type="text" size="40" name="EMail" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>Password:</td>
+            <td>
+                <input type="password" size="40" name="Password" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>Mobile:</td>
+            <td>
+                <input type="text" size="40" name="Telephone" />
+            </td>
+        </tr>
+
+        <tr>
+            <td>Select Your Course :</td>
+            <td>
+                <select name="Subject">
+                    <option value="Select">Select Course</option>
+                    <option>B.Tech</option>
+                    <option>M.Tech</option>
+                    <option>BCA</option>
+                    <option>MCA</option>
+                </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>Comments:</td>
+            <td>
+                <textarea cols="40" name="Comment"></textarea>
+            </td>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td>
+                <input type="submit" value="Submit" name="Submit" />
+                <input type="reset" value="Reset" name="Reset" />
+            </td>
+        </tr>
+
+    </table>
+
+</form>
+
+<P id="output"></P>
+
+</body>
+>>>>>>> f5325fb0cd1ed53323c6de7857d5eccec0422736
+</html>

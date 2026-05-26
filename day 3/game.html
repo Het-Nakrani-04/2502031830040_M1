@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Arcade: Click & Dodge</title>
+  <style>
+    :root{
+      --bg1:#070A12;
+      --bg2:#0B1B3A;
+      --panel:rgba(255,255,255,.06);
+      --panel2:rgba(255,255,255,.09);
+      --text:#EAF2FF;
+      --muted:rgba(234,242,255,.72);
+      --accent:#4CC9F0;
+      --accent2:#F72585;
+      --good:#2EE59D;
+      --bad:#FF4D6D;
+      --shadow: 0 18px 60px rgba(0,0,0,.45);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      background:
+        radial-gradient(900px 550px at 10% 10%, rgba(76,201,240,.20), transparent 55%),
+        radial-gradient(700px 480px at 90% 15%, rgba(247,37,133,.16), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      color:var(--text);
+      overflow:hidden;
+    }
+
+    .wrap{
+      width:min(1080px, 92vw);
+      margin:18px auto;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+      align-items:start;
+    }
+
+    header{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      justify-content:space-between;
+      padding:14px 16px;
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    h1{
+      margin:0;
+      font-size:18px;
+      letter-spacing:.3px;
+    }
+
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:12.5px;
+      line-height:1.3;
+      max-width:640px;
+    }
+
+    .stats{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      min-width:240px;
+    }
+
+    .chip{
+      padding:10px 12px;
+      background:var(--panel2);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:999px;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:92px;
+      align-items:center;
+    }
+
+    .chip b{font-size:14px}
+    .chip small{font-size:11px; color:var(--muted)}
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+
+    .stageCard{
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(8px);
+      position:relative;
+    }
+
+    .stageTop{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 14px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .hint{
+      font-size:12.5px;
+      color:var(--muted);
+    }
+
+    .btnRow{display:flex; gap:10px; flex-wrap:wrap;}
+
+    button{
+      appearance:none;
+      border:0;
+      cursor:pointer;
+      padding:10px 13px;
+      border-radius:12px;
+      font-weight:700;
+      letter-spacing:.2px;
+      color:var(--text);
+      background:linear-gradient(180deg, rgba(76,201,240,.28), rgba(76,201,240,.12));
+      border:1px solid rgba(76,201,240,.35);
+      box-shadow: 0 10px 26px rgba(76,201,240,.12);
+      transition: transform .08s ease, filter .15s ease;
+    }
+    button:hover{filter:brightness(1.1)}
+    button:active{transform: translateY(1px)}
+
+    .danger{
+      background:linear-gradient(180deg, rgba(247,37,133,.26), rgba(247,37,133,.10));
+      border:1px solid rgba(247,37,133,.35);
+      box-shadow: 0 10px 26px rgba(247,37,133,.10);
+    }
+
+    canvas{
+      display:block;
+      width:100%;
+      height:560px;
+      background:
+        radial-gradient(900px 460px at 50% 25%, rgba(76,201,240,.10), transparent 60%),
+        radial-gradient(520px 380px at 20% 70%, rgba(247,37,133,.08), transparent 60%),
+        linear-gradient(180deg, rgba(0,0,0,.20), rgba(0,0,0,.35));
+      cursor:crosshair;
+    }
+
+    .overlay{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      pointer-events:none;
+    }
+
+    .panel{
+      pointer-events:auto;
+      width:min(560px, 92vw);
+      background:rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:20px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      padding:18px;
+      text-align:center;
+    }
+
+    .panel h2{margin:0 0 8px; font-size:20px}
+    .panel p{margin:0; color:var(--muted); font-size:13px; line-height:1.45}
+
+    .panel .row{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
+    .kbd{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:3px 8px;
+      border:1px solid rgba(255,255,255,.18);
+      border-bottom-color: rgba(255,255,255,.12);
+      background:rgba(255,255,255,.07);
+      border-radius:10px;
+      font-weight:800;
+      font-size:12px;
+      color:var(--text);
+    }
+
+    .msgLine{
+      margin-top:10px;
+      font-size:13px;
+      color:rgba(234,242,255,.86);
+      font-weight:700;
+    }
+
+    .srOnly{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
+    }
+
+    @media (max-width:720px){
+      canvas{height:520px}
+      header{flex-direction:column; align-items:flex-start}
+      .stats{justify-content:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>Mini Arcade: Click & Dodge</h1>
+        <p class="sub">
+          Click the <b>glowing targets</b> to gain points. Avoid the <b>danger orbs</b> (they collide with your ship).
+          Difficulty ramps up as time passes.
+        </p>
+      </div>
+      <div class="stats" aria-label="Game stats">
+        <div class="chip"><b id="score">0</b><small>Score</small></div>
+        <div class="chip"><b id="best">0</b><small>Best</small></div>
+        <div class="chip"><b id="lives">3</b><small>Lives</small></div>
+        <div class="chip"><b id="level">1</b><small>Level</small></div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div class="stageCard">
+        <div class="stageTop">
+          <div class="hint">
+            Controls: <span class="kbd">Mouse</span> aim • <span class="kbd">Click</span> shoot • <span class="kbd">R</span> restart • <span class="kbd">P</span> pause
+          </div>
+          <div class="btnRow">
+            <button id="startBtn">Start</button>
+            <button id="pauseBtn" class="danger" disabled>Pause</button>
+            <button id="restartBtn" class="danger" disabled>Restart</button>
+          </div>
+        </div>
+
+        <canvas id="game" width="980" height="560" aria-label="Game canvas"></canvas>
+
+        <div class="overlay" id="overlay">
+          <div class="panel" id="panel">
+            <h2 id="panelTitle">Click Start</h2>
+            <p id="panelText">Your ship follows the mouse. Click glowing targets to score. Don’t get hit by danger orbs.</p>
+            <div class="row">
+              <button id="overlayStart">Start</button>
+            </div>
+            <div class="msgLine" id="panelMsg" style="display:none;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const canvas = document.getElementById('game');
+      const ctx = canvas.getContext('2d');
+
+      const $ = (id) => document.getElementById(id);
+      const scoreEl = $('score');
+      const bestEl = $('best');
+      const livesEl = $('lives');
+      const levelEl = $('level');
+
+      const startBtn = $('startBtn');
+      const pauseBtn = $('pauseBtn');
+      const restartBtn = $('restartBtn');
+      const overlay = $('overlay');
+      const panelTitle = $('panelTitle');
+      const panelText = $('panelText');
+      const overlayStart = $('overlayStart');
+      const panelMsg = $('panelMsg');
+
+      const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+      const rand = (a, b) => a + Math.random() * (b - a);
+      const dist2 = (ax, ay, bx, by) => {
+        const dx = ax - bx, dy = ay - by;
+        return dx*dx + dy*dy;
+      };
+
+      const state = {
+        running: false,
+        paused: false,
+        over: false,
+        t: 0,
+        lastTs: 0,
+        score: 0,
+        lives: 3,
+        level: 1,
+        best: Number(localStorage.getItem('clickdodge_best') || 0),
+
+        pointer: { x: canvas.width / 2, y: canvas.height / 2, down: false },
+        ship: { x: canvas.width / 2, y: canvas.height / 2, r: 15 },
+
+        bullets: [],
+        targets: [],
+        hazards: [],
+        particles: [],
+
+        spawnTimer: 0,
+        hazardTimer: 0,
+        nextSpawnIn: 0.9,
+        nextHazardIn: 1.25
+      };
+
+      bestEl.textContent = state.best;
+
+      function showOverlay(title, text, msg){
+        overlay.style.display = 'flex';
+        panelTitle.textContent = title;
+        panelText.textContent = text || '';
+        panelMsg.style.display = msg ? 'block' : 'none';
+        panelMsg.textContent = msg || '';
+      }
+
+      function hideOverlay(){ overlay.style.display = 'none'; }
+
+      function updateHUD(){
+        scoreEl.textContent = state.score;
+        livesEl.textContent = state.lives;
+        levelEl.textContent = state.level;
+      }
+
+      function resetGame(){
+        state.running = true;
+        state.paused = false;
+        state.over = false;
+        state.t = 0;
+        state.lastTs = 0;
+        state.score = 0;
+        state.lives = 3;
+        state.level = 1;
+
+        state.pointer.x = canvas.width / 2;
+        state.pointer.y = canvas.height / 2;
+        state.ship.x = canvas.width / 2;
+        state.ship.y = canvas.height / 2;
+
+        state.bullets = [];
+        state.targets = [];
+        state.hazards = [];
+        state.particles = [];
+
+        state.spawnTimer = 0;
+        state.hazardTimer = 0;
+        state.nextSpawnIn = 0.9;
+        state.nextHazardIn = 1.25;
+
+        updateHUD();
+        startBtn.disabled = true;
+        pauseBtn.disabled = false;
+        restartBtn.disabled = false;
+        pauseBtn.textContent = 'Pause';
+        hideOverlay();
+      }
+
+      function endGame(){
+        state.running = false;
+        state.over = true;
+
+        if(state.score > state.best){
+          state.best = state.score;
+          localStorage.setItem('clickdodge_best', String(state.best));
+        }
+        bestEl.textContent = state.best;
+        updateHUD();
+
+        startBtn.disabled = false;
+        pauseBtn.disabled = true;
+        restartBtn.disabled = false;
+
+        showOverlay('Game Over', 'Press Restart (or R) to play again.', 'Final score: ' + state.score);
+      }
+
+      function screenToCanvas(e){
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+        const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+        return { x, y };
+      }
+
+      function spawnTarget(){
+        const pad = 28;
+        const x = rand(pad, canvas.width - pad);
+        const y = rand(pad, canvas.height - pad);
+        const r = rand(12, 18);
+
+        // Drift roughly towards mouse over time.
+        const tx = state.pointer.x;
+        const ty = state.pointer.y;
+        const ang = Math.atan2(ty - y, tx - x);
+        const spd = rand(40, 70) * (1 + (state.level - 1) * 0.08);
+
+        state.targets.push({
+          x, y, r,
+          vx: Math.cos(ang) * spd,
+          vy: Math.sin(ang) * spd,
+          alive: true,
+          hue: rand(185, 210)
+        });
+      }
+
+      function spawnHazard(){
+        const pad = 24;
+        // Spawn near edges.
+        const edge = Math.floor(Math.random() * 4);
+        let x, y;
+        if(edge === 0){ x = rand(0, canvas.width); y = -pad; }
+        else if(edge === 1){ x = canvas.width + pad; y = rand(0, canvas.height); }
+       
+        else if(edge === 2){ x = rand(0, canvas.width); y = canvas.height + pad; }
+        else { x = -pad; y = rand(0, canvas.height); }
+
+        const ang = Math.atan2(state.ship.y - y, state.ship.x - x);
+        const spd = rand(70, 120) * (1 + (state.level - 1) * 0.12);
+
+        state.hazards.push({
+          x, y,
+          r: rand(14, 22),
+          vx: Math.cos(ang) * spd,
+          vy: Math.sin(ang) * spd,
+          rot: rand(0, Math.PI * 2)
+        });
+      }
+
+      function shoot(){
+        if(!state.running || state.paused) return;
+
+        const ang = Math.atan2(
+          state.pointer.y - state.ship.y,
+          state.pointer.x - state.ship.x
+        );
+
+        const speed = 520;
+
+        state.bullets.push({
+          x: state.ship.x,
+          y: state.ship.y,
+          vx: Math.cos(ang) * speed,
+          vy: Math.sin(ang) * speed,
+          r: 4,
+          life: 1.2
+        });
+      }
+
+      function addBurst(x, y, color, count = 12){
+        for(let i=0;i<count;i++){
+          const a = Math.random() * Math.PI * 2;
+          const s = rand(40, 180);
+
+          state.particles.push({
+            x, y,
+            vx: Math.cos(a) * s,
+            vy: Math.sin(a) * s,
+            life: rand(0.4, 0.9),
+            maxLife: 1,
+            color
+          });
+        }
+      }
+
+      function update(dt){
+        if(!state.running || state.paused) return;
+
+        state.t += dt;
+
+        state.level = 1 + Math.floor(state.t / 18);
+
+        state.ship.x += (state.pointer.x - state.ship.x) * 0.18;
+        state.ship.y += (state.pointer.y - state.ship.y) * 0.18;
+
+        state.spawnTimer += dt;
+        state.hazardTimer += dt;
+
+        if(state.spawnTimer >= state.nextSpawnIn){
+          state.spawnTimer = 0;
+          spawnTarget();
+          state.nextSpawnIn = clamp(
+            0.9 - state.level * 0.04,
+            0.35,
+            0.9
+          );
+        }
+
+        if(state.hazardTimer >= state.nextHazardIn){
+          state.hazardTimer = 0;
+          spawnHazard();
+          state.nextHazardIn = clamp(
+            1.25 - state.level * 0.05,
+            0.45,
+            1.25
+          );
+        }
+
+        for(const b of state.bullets){
+          b.x += b.vx * dt;
+          b.y += b.vy * dt;
+          b.life -= dt;
+        }
+
+        state.bullets = state.bullets.filter(b =>
+          b.life > 0 &&
+          b.x > -20 && b.x < canvas.width + 20 &&
+          b.y > -20 && b.y < canvas.height + 20
+        );
+
+        for(const t of state.targets){
+          t.x += t.vx * dt;
+          t.y += t.vy * dt;
+
+          if(t.x < t.r || t.x > canvas.width - t.r) t.vx *= -1;
+          if(t.y < t.r || t.y > canvas.height - t.r) t.vy *= -1;
+        }
+
+        for(const h of state.hazards){
+          h.x += h.vx * dt;
+          h.y += h.vy * dt;
+          h.rot += dt * 2;
+        }
+
+        for(const p of state.particles){
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+          p.life -= dt;
+        }
+
+        state.particles = state.particles.filter(p => p.life > 0);
+
+        // Bullet vs target
+        for(const b of state.bullets){
+          for(const t of state.targets){
+            if(!t.alive) continue;
+
+            const rr = (b.r + t.r) * (b.r + t.r);
+
+            if(dist2(b.x, b.y, t.x, t.y) <= rr){
+              t.alive = false;
+              b.life = 0;
+
+              state.score += 10;
+              updateHUD();
+
+              addBurst(t.x, t.y, `hsl(${t.hue} 100% 65%)`, 14);
+            }
+          }
+        }
+
+        state.targets = state.targets.filter(t => t.alive);
+
+        // Hazard vs ship
+        for(const h of state.hazards){
+          const rr = (h.r + state.ship.r - 2);
+          if(dist2(h.x, h.y, state.ship.x, state.ship.y) <= rr * rr){
+
+            addBurst(state.ship.x, state.ship.y, '#FF4D6D', 24);
+
+            state.lives--;
+            updateHUD();
+
+            h.x = -9999;
+
+            if(state.lives <= 0){
+              endGame();
+              return;
+            }
+          }
+        }
+
+        state.hazards = state.hazards.filter(h =>
+          h.x > -80 && h.x < canvas.width + 80 &&
+          h.y > -80 && h.y < canvas.height + 80
+        );
+      }
+
+      function drawShip(){
+        ctx.save();
+        ctx.translate(state.ship.x, state.ship.y);
+
+        const ang = Math.atan2(
+          state.pointer.y - state.ship.y,
+          state.pointer.x - state.ship.x
+        );
+
+        ctx.rotate(ang);
+
+        ctx.beginPath();
+        ctx.moveTo(18, 0);
+        ctx.lineTo(-12, -10);
+        ctx.lineTo(-6, 0);
+        ctx.lineTo(-12, 10);
+        ctx.closePath();
+
+        ctx.fillStyle = '#4CC9F0';
+        ctx.shadowColor = '#4CC9F0';
+        ctx.shadowBlur = 18;
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      function render(){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Grid
+        ctx.save();
+        ctx.globalAlpha = 0.08;
+
+        for(let x=0; x<canvas.width; x+=40){
+          ctx.beginPath();
+          ctx.moveTo(x,0);
+          ctx.lineTo(x,canvas.height);
+          ctx.strokeStyle = '#ffffff';
+          ctx.stroke();
+        }
+
+        for(let y=0; y<canvas.height; y+=40){
+          ctx.beginPath();
+          ctx.moveTo(0,y);
+          ctx.lineTo(canvas.width,y);
+          ctx.strokeStyle = '#ffffff';
+          ctx.stroke();
+        }
+
+        ctx.restore();
+
+        // Targets
+        for(const t of state.targets){
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
+
+          ctx.fillStyle = `hsl(${t.hue} 100% 60%)`;
+          ctx.shadowColor = `hsl(${t.hue} 100% 60%)`;
+          ctx.shadowBlur = 20;
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(t.x, t.y, t.r * 0.45, 0, Math.PI * 2);
+          ctx.fillStyle = '#fff';
+          ctx.fill();
+        }
+
+        // Hazards
+        for(const h of state.hazards){
+          ctx.save();
+          ctx.translate(h.x, h.y);
+          ctx.rotate(h.rot);
+
+          ctx.beginPath();
+
+          for(let i=0;i<8;i++){
+            const a = i * Math.PI / 4;
+            const r = i % 2 ? h.r * 0.55 : h.r;
+
+            const px = Math.cos(a) * r;
+            const py = Math.sin(a) * r;
+
+            if(i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+
+          ctx.closePath();
+
+          ctx.fillStyle = '#F72585';
+          ctx.shadowColor = '#F72585';
+          ctx.shadowBlur = 18;
+          ctx.fill();
+
+          ctx.restore();
+        }
+
+        // Bullets
+        for(const b of state.bullets){
+          ctx.beginPath();
+          ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowColor = '#ffffff';
+          ctx.shadowBlur = 10;
+          ctx.fill();
+        }
+
+        // Particles
+        for(const p of state.particles){
+          ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
+        }
+
+        ctx.globalAlpha = 1;
+
+        drawShip();
+
+        if(state.paused){
+          ctx.fillStyle = 'rgba(0,0,0,.45)';
+          ctx.fillRect(0,0,canvas.width,canvas.height);
+
+          ctx.fillStyle = '#fff';
+          ctx.font = 'bold 42px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('PAUSED', canvas.width/2, canvas.height/2);
+        }
+      }
+
+      function loop(ts){
+        if(!state.lastTs) state.lastTs = ts;
+
+        const dt = Math.min(0.033, (ts - state.lastTs) / 1000);
+        state.lastTs = ts;
+
+        update(dt);
+        render();
+
+        requestAnimationFrame(loop);
+      }
+
+      // Events
+      canvas.addEventListener('mousemove', (e) => {
+        const p = screenToCanvas(e);
+        state.pointer.x = p.x;
+        state.pointer.y = p.y;
+      });
+
+      canvas.addEventListener('click', shoot);
+
+      window.addEventListener('keydown', (e) => {
+        if(e.key.toLowerCase() === 'r'){
+          resetGame();
+        }
+
+        if(e.key.toLowerCase() === 'p'){
+          if(!state.running) return;
+
+          state.paused = !state.paused;
+          pauseBtn.textContent = state.paused ? 'Resume' : 'Pause';
+        }
+      });
+
+      startBtn.addEventListener('click', resetGame);
+      overlayStart.addEventListener('click', resetGame);
+
+      pauseBtn.addEventListener('click', () => {
+        state.paused = !state.paused;
+        pauseBtn.textContent = state.paused ? 'Resume' : 'Pause';
+      });
+
+      restartBtn.addEventListener('click', resetGame);
+
+      updateHUD();
+      showOverlay(
+        'Mini Arcade',
+        'Move your mouse to control the ship. Click to shoot glowing targets and avoid danger orbs.'
+      );
+
+      requestAnimationFrame(loop);
+
+    })();
+  </script>
+</body>
+</html>
